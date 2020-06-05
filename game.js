@@ -272,7 +272,7 @@ Cloud = function() {
   let mat = new THREE.MeshPhongMaterial({
     color: Colors.white,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.8,
     shading: THREE.FlatShading
   });
 

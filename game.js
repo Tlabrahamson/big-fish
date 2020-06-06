@@ -150,7 +150,7 @@ Sea = function() {
   var mat = new THREE.MeshPhongMaterial({
     color: Colors.blue,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.9,
     shading: THREE.FlatShading
   });
 
@@ -227,14 +227,14 @@ let Fish = function() {
   this.mesh.add(body);
 
   // Create the tail
-  var geomTail = new THREE.BoxGeometry(25, 50, 5, 1, 1, 1);
+  var geomTail = new THREE.BoxGeometry(10, 25, 0, 1);
   var matTail = new THREE.MeshPhongMaterial({
     color: Colors.red,
     shading: THREE.FlatShading
   });
 
   var tail = new THREE.Mesh(geomTail, matTail);
-  tail.position.set(-35, 0, 0);
+  tail.position.set(-30, 0, 0);
   tail.castShadow = true;
   tail.receiveShadow = true;
   this.mesh.add(tail);
@@ -244,36 +244,83 @@ let fish;
 
 function createFish() {
   fish = new Fish();
-  fish.mesh.scale.set(0.25, 0.25, 0.25);
+  fish.mesh.scale.set(0.05, 0.05, 0.05);
   fish.mesh.position.y = 100;
   scene.add(fish.mesh);
 }
 
 function updateFish() {
-  var targetY = normalize(mousePos.y, -0.75, 0.75, 25, 175);
-  var targetX = normalize(mousePos.x, -0.75, 0.75, -100, 100);
+  var targetY = normalize(mousePos.y, -0.75, 0.75, 0, 110);
+  var targetX = normalize(mousePos.x, -0.75, 0.75, -150, 150);
 
   // Move the plane at each frame by adding a fraction of the remaining distance
   fish.mesh.position.y += (targetY - fish.mesh.position.y) * 0.1;
+  fish.mesh.position.x += (targetX - fish.mesh.position.x) * 0.1;
 
   // Rotate the plane proportionally to the remaining distance
   fish.mesh.rotation.z = (targetY - fish.mesh.position.y) * 0.0128;
   fish.mesh.rotation.x = (fish.mesh.position.y - targetY) * 0.0064;
 }
 
+let BadFish = function() {
+  this.mesh = new THREE.Object3D();
+
+  // Fish body
+  let geomBody = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
+  let matBody = new THREE.MeshPhongMaterial({
+    color: Colors.red,
+    shading: THREE.FlatShading
+  });
+
+  geomBody.vertices[4].y += 10;
+  geomBody.vertices[4].z -= 20;
+  geomBody.vertices[5].y += 10;
+  geomBody.vertices[5].z += 20;
+  geomBody.vertices[6].y -= 10;
+  geomBody.vertices[6].z -= 20;
+  geomBody.vertices[7].y -= 20;
+  geomBody.vertices[7].z += 20;
+
+  let body = new THREE.Mesh(geomBody, matBody);
+  body.castShadow = true;
+  body.receiveShadow = true;
+  this.mesh.add(body);
+
+  // Create the tail
+  var geomTail = new THREE.BoxGeometry(10, 25, 0, 1);
+  var matTail = new THREE.MeshPhongMaterial({
+    color: Colors.red,
+    shading: THREE.FlatShading
+  });
+
+  var tail = new THREE.Mesh(geomTail, matTail);
+  tail.position.set(30, 0, 0);
+  tail.castShadow = true;
+  tail.receiveShadow = true;
+  this.mesh.add(tail);
+};
+
+let badFish;
+
+function createBadFish() {
+  badFish = new BadFish();
+  badFish.mesh.scale.set(0.05, 0.05, 0.05);
+  badFish.mesh.position.y = 50;
+  badFish.mesh.position.x = 250;
+  scene.add(badFish.mesh);
+}
+
 Cloud = function() {
   // Create an empty container that will hold the different parts of the cloud
   this.mesh = new THREE.Object3D();
 
-  // Create the cube geometry
+  // Create the sphere geometry
   let geom = new THREE.SphereGeometry(25, 25, 25);
 
   // create a material
   let mat = new THREE.MeshPhongMaterial({
     color: Colors.white,
-    transparent: true,
-    opacity: 0.8,
-    shading: THREE.FlatShading
+    opacity: 0.8
   });
 
   // Duplicate the geometry of a random number of times
@@ -282,22 +329,22 @@ Cloud = function() {
     // Creat the mesh by cloning the geometry
     let m = new THREE.Mesh(geom, mat);
 
-    // Set the position and the rotation of each cube at random
+    // Set the position and the rotation of each sphere at random
     m.position.x = i * 15;
     m.position.y = Math.random() * 10;
     m.position.z = Math.random() * 10;
     m.rotation.z = Math.random() * Math.PI * 2;
     m.rotation.z = Math.random() * Math.PI * 2;
 
-    // Set the size of the cube randomly
+    // Set the size of the sphere randomly
     let s = 0.1 + Math.random() * 0.9;
     m.scale.set(s, s, s);
 
-    // Allow each cube to cast and to receive shadows
+    // Allow each sphere to cast and to receive shadows
     m.castShadow = true;
     m.receiveShadow = true;
 
-    // Add the cube to the container
+    // Add the sphere to the container
     this.mesh.add(m);
   }
 };
@@ -359,6 +406,7 @@ function loop() {
   // Rotate the sea
   sea.mesh.rotation.z += 0.001;
   sky.mesh.rotation.z += 0.001;
+  badFish.mesh.position.x -= 1;
 
   sea.moveWaves();
 
@@ -391,6 +439,7 @@ function init(e) {
 
   // Add the objects
   createFish();
+  createBadFish();
   createSea();
   createSky();
 
